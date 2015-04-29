@@ -16,18 +16,19 @@
 require_relative 'lib/ircparser'
 
 Gem::Specification.new do |s|
-	s.name    = 'ircparser'
-	s.version = IRCParser::VERSION
-
+	s.name        = 'ircparser'
 	s.description = 'A standards compliant parser for the IRCv3.2 message format.'
-	s.files       = Dir["lib/**/*.rb"] + Dir['test/**/*.rb']
-	s.license     = 'ISC'
 	s.summary     = 'An IRCv3.2 message parser.'
+	s.version     = IRCParser::VERSION
+
+	s.files                 = Dir["lib/**/*.rb"] + Dir['test/**/*.rb']
+	s.required_ruby_version = '>= 2.0.0'
+	s.license               = 'ISC'
 
 	s.author   = 'Peter "SaberUK" Powell'
 	s.email    = 'petpow@saberuk.com'
 	s.homepage = 'https://github.com/SaberUK/ircparser'
 
-	s.add_development_dependency 'minitest', '~> 5.6.0'
+	s.add_development_dependency 'minitest', '~> 5.6', '>= 5.6.0'
 	s.add_development_dependency 'tomdoc',   '~> 0.2.5'
 end
