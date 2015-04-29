@@ -126,7 +126,7 @@ describe IRCParser::Message do
 		end
 		it 'should unescape correctly' do
 			message = IRCParser::Message.parse @text
-			#message.tags['foo'].must_equal @unescaped
+			message.tags['foo'].must_equal @unescaped
 		end
 	end
 

@@ -145,7 +145,7 @@ module IRCParser
 				if tag =~ MATCH_TAG
 					name, value = $~[1..2]
 					TAG_ESCAPES.each do |unescaped, escaped|
-						value.gsub! escaped, Regexp.escape(unescaped)
+						value.gsub! escaped, unescaped
 					end unless value.nil?
 					tags[name] = value
 				else
