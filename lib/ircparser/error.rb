@@ -27,5 +27,10 @@ module IRCParser
 		def initialize value
 			@value = value
 		end
+
+		# Public: The reason this error was raised.
+		def to_s
+			return "#{@value} -- #{super}"
+		end
 	end
 end
