@@ -38,28 +38,30 @@ describe IRCParser::Source do
 		end
 	end
 
-	describe 'when checking a valid user source' do
-		before do
-			@text = 'nick!user@host'
-			@source = IRCParser::Source.new @text
-		end
-		it 'should consist of the correct components' do
-			@source.nick.must_equal 'nick'
-			@source.user.must_equal 'user'
-			@source.host.must_equal 'host'
-		end
-		it 'should be a user not a server' do
-			@source.is_server?.must_equal false
-			@source.is_user?.must_equal true
-		end
-		it 'should serialise back to the same text' do
-			@source.to_s.must_equal @text
-		end
-	end
+	USER_MASKS = {
+		'nick!user@host' => { nick: 'nick', user: 'user', host: 'host' },
+		'nick!user'      => { nick: 'nick', user: 'user', host: nil    },
+		'nick@host'      => { nick: 'nick', user: nil,    host: 'host' },
+		'nick'           => { nick: 'nick', user: nil,    host: nil    }
+	}
 
-	describe 'when checking an invalid server source' do
-		it 'should throw an IRCParser::Error' do
-			proc { IRCParser::Source.new 'test' }.must_raise IRCParser::Error
+	USER_MASKS.each do |serialized, deserialized|
+		describe 'when checking a valid user source' do
+			before do
+				@source = IRCParser::Source.new serialized
+			end
+			it 'should consist of the correct components' do
+				@source.nick.must_equal deserialized[:nick]
+				@source.user.must_equal deserialized[:user]
+				@source.host.must_equal deserialized[:host]
+			end
+			it 'should be a user not a server' do
+				@source.is_server?.must_equal false
+				@source.is_user?.must_equal true
+			end
+			it 'should serialise back to the same text' do
+				@source.to_s.must_equal serialized
+			end
 		end
 	end
 

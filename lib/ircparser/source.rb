@@ -19,7 +19,7 @@ module IRCParser
 	class Source
 
 		# Internal: A regular expression which matches a n!u@h mask.
-		MATCH_USER = /^(?<nick>\S+)!(?<user>\S+)@(?<host>\S+)$/
+		MATCH_USER = /^(?<nick>[^\s!@]+?)(?:!(?<user>[^\s!@]+?))?(?:@(?<host>[^\s!@]+?))?$/
 
 		# Internal: A regular expression which matches a server name.
 		MATCH_SERVER = /^(?<host>\S+\.\S+)$/
@@ -37,13 +37,13 @@ module IRCParser
 		#
 		# source - Either a n!u@h mask or a server name.
 		def initialize source
-			if MATCH_USER =~ source
+			if MATCH_SERVER =~ source
+				@type = :server
+				@host = $~[:host]
+			elsif MATCH_USER =~ source
 				@type = :user
 				@nick = $~[:nick]
 				@user = $~[:user]
-				@host = $~[:host]
-			elsif MATCH_SERVER =~ source
-				@type = :server
 				@host = $~[:host]
 			else
 				raise IRCParser::Error.new(source), 'source is not a user mask or server name'
@@ -67,7 +67,13 @@ module IRCParser
 
 		# Public: serialises this source to the serialised form.
 		def to_s
-			return is_user? ? "#{@nick}!#{@user}@#{@host}" : @host
+			if is_user?
+				buffer = @nick
+				buffer += "!#{@user}" unless @user.nil?
+				buffer += "@#{@host}" unless @host.nil?
+				return buffer
+			end
+			return @host
 		end
 	end
 end
