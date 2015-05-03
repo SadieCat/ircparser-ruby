@@ -19,7 +19,7 @@ module IRCParser
 	class Source
 
 		# Internal: A regular expression which matches a n!u@h mask.
-		MATCH_USER = /^(?<nick>[^\s!@]+?)(?:!(?<user>[^\s!@]+?))?(?:@(?<host>[^\s!@]+?))?$/
+		MATCH_USER = /^(?<nick>[^\s!@]+)(?:!(?<user>[^\s!@]+))?(?:@(?<host>[^\s!@]+))?$/
 
 		# Internal: A regular expression which matches a server name.
 		MATCH_SERVER = /^(?<host>\S+\.\S+)$/
