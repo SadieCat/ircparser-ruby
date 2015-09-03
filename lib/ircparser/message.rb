@@ -19,7 +19,7 @@ module IRCParser
 	class Message
 
 		# Internal: A regular expression which matches a tag.
-		MATCH_TAG = /^(\S+?)(?:=(\S+))?$/
+		MATCH_TAG = /^(?<name>[^\s=]+?)(?:=(?<value>[^\s;]+))?$/
 
 		# Internal: The characters which need to be escaped in tag values.
 		TAG_ESCAPES = {
@@ -143,7 +143,7 @@ module IRCParser
 			tags = Hash.new
 			token[1..-1].split(';').each do |tag|
 				if tag =~ MATCH_TAG
-					name, value = $~[1..2]
+					name, value = $~['name'], $~['value']
 					TAG_ESCAPES.each do |unescaped, escaped|
 						value.gsub! escaped, unescaped
 					end unless value.nil?
