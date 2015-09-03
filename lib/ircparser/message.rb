@@ -52,7 +52,7 @@ module IRCParser
 
 		# Public: Parses an IRC message from network form.
 		#
-		# line - The line to attempt to parse/
+		# line - The line to attempt to parse.
 		def self.parse line
 
 			# Ruby really needs some kind of basic type checking.
