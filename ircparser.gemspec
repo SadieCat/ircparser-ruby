@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
 	s.email    = 'petpow@saberuk.com'
 	s.homepage = 'https://github.com/SaberUK/ircparser'
 
-	s.add_development_dependency 'minitest', '~> 5.6', '>= 5.6.0'
+	s.add_development_dependency 'minitest', '~> 5.10', '>= 5.10.1'
+	s.add_development_dependency 'rake', '~> 12.0'
 	s.add_development_dependency 'tomdoc',   '~> 0.2.5'
 end
