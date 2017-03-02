@@ -2,7 +2,7 @@
 
 ## About
 
-This library implements a parser for the IRCv3.2 message format.
+This library implements a parser for the IRCv3 message format.
 
 ## Example Usage
 

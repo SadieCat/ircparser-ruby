@@ -17,8 +17,8 @@ require_relative 'lib/ircparser'
 
 Gem::Specification.new do |s|
 	s.name        = 'ircparser'
-	s.description = 'A standards compliant parser for the IRCv3.2 message format.'
-	s.summary     = 'An IRCv3.2 message parser.'
+	s.description = 'A standards compliant parser for the IRCv3 message format.'
+	s.summary     = 'An IRCv3 message parser.'
 	s.version     = IRCParser::VERSION
 
 	s.files                 = Dir["lib/**/*.rb"] + Dir['test/**/*.rb']

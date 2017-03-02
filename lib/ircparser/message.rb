@@ -39,7 +39,7 @@ module IRCParser
 		# Public: The source of this command or nil if unsourced.
 		attr_reader :source
 
-		# Public: A hash of IRCv3.2 message tags.
+		# Public: A hash of IRCv3 message tags.
 		attr_reader :tags
 
 		# Public: Initialize a new message.
@@ -63,7 +63,7 @@ module IRCParser
 			current_index = 0
 			components = Hash.new
 
-			# Have we encountered IRCv3.2 message tags?
+			# Have we encountered IRCv3 message tags?
 			components[:tags] = Hash.new
 			if current_index < tokens.size && tokens[current_index][0] == '@'
 				components[:tags] = __parse_tags tokens[current_index]
