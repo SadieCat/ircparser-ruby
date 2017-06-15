@@ -144,4 +144,27 @@ describe IRCParser::Message do
 		end
 	end
 
+	describe 'when checking we can handle an empty <trailing> parameter' do
+		before do
+			@text = 'COMMAND :'
+			@message = IRCParser::Message.parse @text
+		end
+		it 'should parse the trailing parameter properly' do
+			@message.parameters.size.must_equal 1
+			@message.parameters[0].must_equal ''
+		end
+		it 'should serialize the trailing parameter properly' do
+			@message.to_s.must_equal @text
+		end
+	end
+
+	describe 'when checking we can handle serialising malformed parameters' do
+		it 'should throw an IRCParser::Error when a non <trailing> parameter contains spaces' do
+			proc {
+				message = IRCParser::Message.new command: 'COMMAND', parameters: [ 'param1 param1', 'param2' ]
+				message.to_s
+			}.must_raise IRCParser::Error
+		end
+	end
+
 end

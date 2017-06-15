@@ -178,10 +178,15 @@ module IRCParser
 		def __serialize_parameters
 			buffer = String.new
 			@parameters.each_with_index do |parameter, index|
+				trailing = parameter.include? ' '
+				if trailing && index != @parameters.size-1
+					raise IRCParser::Error.new(parameter), "only the last parameter may contain spaces"
+				end
+
 				buffer += ' '
-				if parameter.include? ' '
+				if trailing || parameter.empty?
 					buffer += ':'
-					buffer += parameters[index..-1].join ' '
+					buffer += parameter
 					break
 				end
 				buffer += parameter
