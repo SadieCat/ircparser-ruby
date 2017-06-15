@@ -34,8 +34,8 @@ end
 Rake::TestTask.new do |task|
 	task.options = '--pride' if RUBY_VERSION >= '2.2.0'
 	task.test_files = FileList['test/test*.rb']
-	task.verbose = true if ENV['RAKE_TEST_VERBOSE']
-	task.warning = true if ENV['RAKE_TEST_WARNING']
+	task.verbose = ENV['RAKE_TEST_VERBOSE'] == '1'
+	task.warning = ENV['RAKE_TEST_WARNING'] == '1'
 end
 
 RDoc::Task.new do |task|
