@@ -59,33 +59,38 @@ module IRCParser
 			raise IRCParser::Error.new(line), "line is not a string" unless line.is_a? String
 
 			# Split the message up into an array of tokens.
-			tokens = line.split ' '
-			current_index = 0
+			buffer = line.clone
+			current_token = __get_token buffer
 			components = Hash.new
 
 			# Have we encountered IRCv3 message tags?
 			components[:tags] = Hash.new
-			if current_index < tokens.size && tokens[current_index][0] == '@'
-				components[:tags] = __parse_tags tokens[current_index]
-				current_index += 1
+			if current_token != nil && current_token[0] == '@'
+				components[:tags] = __parse_tags current_token
+				current_token = __get_token buffer
 			end
 
 			# Have we encountered the source of this message?
-			if current_index < tokens.size && tokens[current_index][0] == ':'
-				components[:source] = IRCParser::Source.new tokens[current_index][1..-1]
-				current_index += 1
+			if current_token != nil && current_token[0] == ':'
+				components[:source] = IRCParser::Source.new current_token[1..-1]
+				current_token = __get_token buffer
 			end
 
 			# The command parameter is mandatory.
-			if current_index < tokens.size
-				components[:command] = tokens[current_index]
-				current_index += 1
+			if current_token != nil
+				components[:command] = current_token.upcase
+				current_token = __get_final_token buffer
 			else
 				raise IRCParser::Error.new(line), 'message is missing the command name'
 			end
 
 			# Try to parse all of the remaining parameters.
-			components[:parameters] = __parse_parameters tokens[current_index..-1]
+			components[:parameters] = Array.new
+			while current_token != nil
+				components[:parameters] << current_token
+				current_token = __get_final_token buffer
+			end
+
 			return IRCParser::Message.new components
 		end
 
@@ -120,20 +125,34 @@ module IRCParser
 
 		private
 
-		# Internal: Parse parameters from network form to an Array.
+		# Internal: Retrieves a space delimited token from the buffer.
 		#
-		# token - A list of tags in network form.
-		def self.__parse_parameters tokens
-			parameters = Array.new
-			tokens.each_with_index do |token, index|
-				if token[0] == ':'
-					last_token = tokens[index..-1].join ' '
-					parameters << last_token[1..-1]
-					break
-				end
-				parameters << token
+		# data - The buffer to retrieve the token from.
+		def self.__get_token buffer
+			return nil if buffer.empty?
+			position = buffer.index ' '
+			if position == nil
+				token = buffer.clone
+				buffer.clear
+				return token
 			end
-			return parameters
+			token = buffer.slice! 0...position
+			position = buffer.index /\S+/
+			buffer.slice! 0...position
+			return token
+		end
+
+		# Internal: Retrieves a space delimited token that may be a <trailing> parameter.
+		#
+		# data - The buffer to retrieve the token from.
+		def self.__get_final_token buffer
+			return nil if buffer.empty?
+			if buffer[0] == ':'
+				token = buffer[1..-1]
+				buffer.clear
+				return token
+			end
+			return __get_token buffer
 		end
 
 		# Internal: Parse tags from network form to a Hash.

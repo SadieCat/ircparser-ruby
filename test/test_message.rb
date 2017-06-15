@@ -130,4 +130,18 @@ describe IRCParser::Message do
 		end
 	end
 
+	describe 'when checking we can handle multiple consecutive spaces in a <trailing> parameter' do
+		before do
+			@text = 'COMMAND :param1  param1  '
+			@message = IRCParser::Message.parse @text
+		end
+		it 'should parse the trailing parameter properly' do
+			@message.parameters.size.must_equal 1
+			@message.parameters[0].must_equal 'param1  param1  '
+		end
+		it 'should serialize the trailing parameter properly' do
+			@message.to_s.must_equal @text
+		end
+	end
+
 end
