@@ -144,6 +144,16 @@ describe IRCParser::Message do
 		end
 	end
 
+	describe 'when checking we can handle a space after the command' do
+		before do
+			@text = 'COMMAND '
+			@message = IRCParser::Message.parse @text
+		end
+		it 'should parse the message properly' do
+			@message.parameters.size.must_equal 0
+		end
+	end
+
 	describe 'when checking we can handle an empty <trailing> parameter' do
 		before do
 			@text = 'COMMAND :'

@@ -138,7 +138,11 @@ module IRCParser
 			end
 			token = buffer.slice! 0...position
 			position = buffer.index /\S+/
-			buffer.slice! 0...position
+			if position == nil
+				buffer.clear
+			else
+				buffer.slice! 0...position
+			end
 			return token
 		end
 
