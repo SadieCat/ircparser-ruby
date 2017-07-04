@@ -33,9 +33,13 @@ describe IRCParser::Prefix do
 				@prefix = IRCParser::Prefix.new serialized
 			end
 			it 'should consist of the correct components' do
-				@prefix.nick.must_equal deserialized[:nick]
-				@prefix.user.must_equal deserialized[:user]
-				@prefix.host.must_equal deserialized[:host]
+				%i(nick user host).each do |component|
+					if deserialized[component].nil?
+						@prefix.send(component).must_be_nil
+					else
+						@prefix.send(component).must_equal deserialized[component]
+					end
+				end
 			end
 			it 'should serialise back to the same text' do
 				@prefix.to_s.must_equal serialized
