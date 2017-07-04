@@ -19,7 +19,7 @@ require 'ircparser'
 require 'minitest/autorun'
 
 describe IRCParser::Message do
-	describe 'when checking a valid message with tags and a source' do
+	describe 'when checking a valid message with tags and a prefix' do
 		before do
 			@text = '@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 :irc.example.com COMMAND param1 param2 :param3 param3'
 			@message = IRCParser::Message.parse @text
@@ -29,8 +29,8 @@ describe IRCParser::Message do
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			@message.tags.must_equal tags
-			@message.source.wont_be_nil
-			@message.source.host.must_equal 'irc.example.com'
+			@message.prefix.wont_be_nil
+			@message.prefix.host.must_equal 'irc.example.com'
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_equal parameters
 		end
@@ -39,7 +39,7 @@ describe IRCParser::Message do
 		end
 	end
 
-	describe 'when checking a valid message with a source but no tags' do
+	describe 'when checking a valid message with a prefix but no tags' do
 		before do
 			@text = ':irc.example.com COMMAND param1 param2 :param3 param3'
 			@message = IRCParser::Message.parse @text
@@ -48,8 +48,8 @@ describe IRCParser::Message do
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			@message.tags.must_be_empty
-			@message.source.wont_be_nil
-			@message.source.host.must_equal 'irc.example.com'
+			@message.prefix.wont_be_nil
+			@message.prefix.host.must_equal 'irc.example.com'
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_equal parameters
 		end
@@ -58,7 +58,7 @@ describe IRCParser::Message do
 		end
 	end
 
-	describe 'when checking a valid message with tags but no source' do
+	describe 'when checking a valid message with tags but no prefix' do
 		before do
 			@text = '@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 COMMAND param1 param2 :param3 param3'
 			@message = IRCParser::Message.parse @text
@@ -68,7 +68,7 @@ describe IRCParser::Message do
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			@message.tags.must_equal tags
-			@message.source.must_be_nil
+			@message.prefix.must_be_nil
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_equal parameters
 		end
@@ -77,7 +77,7 @@ describe IRCParser::Message do
 		end
 	end
 
-	describe 'when checking a valid message with tags but no source' do
+	describe 'when checking a valid message with tags but no prefix' do
 		before do
 			@text = '@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 COMMAND param1 param2 :param3 param3'
 			@message = IRCParser::Message.parse @text
@@ -87,7 +87,7 @@ describe IRCParser::Message do
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			@message.tags.must_equal tags
-			@message.source.must_be_nil
+			@message.prefix.must_be_nil
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_equal parameters
 		end
@@ -97,14 +97,14 @@ describe IRCParser::Message do
 	end
 
 
-	describe 'when checking a valid message with no tags, source or parameters' do
+	describe 'when checking a valid message with no tags, prefix or parameters' do
 		before do
 			@text = 'COMMAND'
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should consist of the correct components' do 
 			@message.tags.must_be_empty
-			@message.source.must_be_nil
+			@message.prefix.must_be_nil
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_be_empty
 		end

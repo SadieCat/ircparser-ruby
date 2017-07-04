@@ -36,17 +36,17 @@ module IRCParser
 		# Public: An array of command parameters.
 		attr_reader :parameters
 
-		# Public: The source of this command or nil if unsourced.
-		attr_reader :source
+		# Public: The prefix of this command or nil if unprefixd.
+		attr_reader :prefix
 
 		# Public: A hash of IRCv3 message tags.
 		attr_reader :tags
 
 		# Public: Initialize a new message.
-		def initialize command: String.new, parameters: Array.new, source: nil, tags: Hash.new
+		def initialize command: String.new, parameters: Array.new, prefix: nil, tags: Hash.new
 			@command    = command
 			@parameters = parameters
-			@source     = source
+			@prefix     = prefix
 			@tags       = tags
 		end
 
@@ -70,9 +70,9 @@ module IRCParser
 				current_token = __get_token buffer
 			end
 
-			# Have we encountered the source of this message?
+			# Have we encountered the prefix of this message?
 			if current_token != nil && current_token[0] == ':'
-				components[:source] = IRCParser::Source.new current_token[1..-1]
+				components[:prefix] = IRCParser::Prefix.new current_token[1..-1]
 				current_token = __get_token buffer
 			end
 
@@ -106,10 +106,10 @@ module IRCParser
 				buffer += ' '
 			end
 
-			# Serialize the source.
-			unless source.nil?
+			# Serialize the prefix.
+			unless prefix.nil?
 				buffer += ':'
-				buffer += source.to_s
+				buffer += prefix.to_s
 				buffer += ' '
 			end
 

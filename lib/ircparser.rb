@@ -21,4 +21,4 @@ end
 
 require_relative 'ircparser/error'
 require_relative 'ircparser/message'
-require_relative 'ircparser/source'
+require_relative 'ircparser/prefix'

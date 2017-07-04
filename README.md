@@ -13,7 +13,7 @@ require 'ircparser'
 begin
 	message = IRCParser::Message.parse '@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 :irc.example.com COMMAND param1 param2 :param3 param3'
 	puts message.inspect
-	# => #<IRCParser::Message:0x007ff774903a30 @tags={"tag1"=>"value1", "tag2"=>nil, "vendor1/tag3"=>"value2", "vendor2/tag4"=>nil}, @source=#<IRCParser::Source:0x007ff774902ec8 @type=:server, @host="irc.example.com">, @command="COMMAND", @parameters=["param1", "param2", "param3 param3"]>
+	# => #<IRCParser::Message:0x007ff774903a30 @tags={"tag1"=>"value1", "tag2"=>nil, "vendor1/tag3"=>"value2", "vendor2/tag4"=>nil}, @prefix=#<IRCParser::Prefix:0x007ff774902ec8 @type=:server, @host="irc.example.com">, @command="COMMAND", @parameters=["param1", "param2", "param3 param3"]>
 rescue IRCParser::Error => e
 	puts "ERROR: #{e.message} -- #{e.value}"
 end

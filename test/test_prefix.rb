@@ -18,23 +18,23 @@ $LOAD_PATH.unshift "#{Dir.pwd}/lib"
 require 'ircparser'
 require 'minitest/autorun'
 
-describe IRCParser::Source do
-	describe 'when checking a valid server source' do
+describe IRCParser::Prefix do
+	describe 'when checking a valid server prefix' do
 		before do
 			@text = 'irc.example.com'
-			@source = IRCParser::Source.new @text
+			@prefix = IRCParser::Prefix.new @text
 		end
 		it 'should consist of the correct components' do
-			@source.nick.must_be_nil
-			@source.user.must_be_nil
-			@source.host.must_equal 'irc.example.com'
+			@prefix.nick.must_be_nil
+			@prefix.user.must_be_nil
+			@prefix.host.must_equal 'irc.example.com'
 		end
 		it 'should be a server not a user' do
-			@source.is_server?.must_equal true
-			@source.is_user?.must_equal false
+			@prefix.is_server?.must_equal true
+			@prefix.is_user?.must_equal false
 		end
 		it 'should serialise back to the same text' do
-			@source.to_s.must_equal @text
+			@prefix.to_s.must_equal @text
 		end
 	end
 
@@ -46,33 +46,33 @@ describe IRCParser::Source do
 	}
 
 	USER_MASKS.each do |serialized, deserialized|
-		describe 'when checking a valid user source' do
+		describe 'when checking a valid user prefix' do
 			before do
-				@source = IRCParser::Source.new serialized
+				@prefix = IRCParser::Prefix.new serialized
 			end
 			it 'should consist of the correct components' do
-				@source.nick.must_equal deserialized[:nick]
-				@source.user.must_equal deserialized[:user]
-				@source.host.must_equal deserialized[:host]
+				@prefix.nick.must_equal deserialized[:nick]
+				@prefix.user.must_equal deserialized[:user]
+				@prefix.host.must_equal deserialized[:host]
 			end
 			it 'should be a user not a server' do
-				@source.is_server?.must_equal false
-				@source.is_user?.must_equal true
+				@prefix.is_server?.must_equal false
+				@prefix.is_user?.must_equal true
 			end
 			it 'should serialise back to the same text' do
-				@source.to_s.must_equal serialized
+				@prefix.to_s.must_equal serialized
 			end
 		end
 	end
 
-	describe 'when checking an invalid user source' do
+	describe 'when checking an invalid user prefix' do
 		it 'should throw an IRCParser::Error when components are missing' do
-			proc { IRCParser::Source.new 'nick!@' }.must_raise IRCParser::Error
-			proc { IRCParser::Source.new '!user@' }.must_raise IRCParser::Error
-			proc { IRCParser::Source.new '!@host' }.must_raise IRCParser::Error
-			proc { IRCParser::Source.new 'nick!user@' }.must_raise IRCParser::Error
-			proc { IRCParser::Source.new 'nick!@host' }.must_raise IRCParser::Error
-			proc { IRCParser::Source.new '!user@host' }.must_raise IRCParser::Error
+			proc { IRCParser::Prefix.new 'nick!@' }.must_raise IRCParser::Error
+			proc { IRCParser::Prefix.new '!user@' }.must_raise IRCParser::Error
+			proc { IRCParser::Prefix.new '!@host' }.must_raise IRCParser::Error
+			proc { IRCParser::Prefix.new 'nick!user@' }.must_raise IRCParser::Error
+			proc { IRCParser::Prefix.new 'nick!@host' }.must_raise IRCParser::Error
+			proc { IRCParser::Prefix.new '!user@host' }.must_raise IRCParser::Error
 		end
 	end
 end

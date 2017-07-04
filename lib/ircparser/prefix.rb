@@ -15,8 +15,8 @@
 
 module IRCParser
 
-	# Public: Represents the source of an IRC message.
-	class Source
+	# Public: Represents the prefix of an IRC message.
+	class Prefix
 
 		# Internal: A regular expression which matches a n!u@h mask.
 		MATCH_USER = /^(?<nick>[^@!]+)     (?:!(?<user>[^@]+))?     (?:@(?<host>.+))?$/x
@@ -24,48 +24,48 @@ module IRCParser
 		# Internal: A regular expression which matches a server name.
 		MATCH_SERVER = /^(?<host>\S+\.\S+)$/
 
-		# Public: The hostname of this source.
+		# Public: The hostname of this prefix.
 		attr_reader :host
 
-		# Public: The nickname of this user or nil if the source is a server.
+		# Public: The nickname of this user or nil if the prefix is a server.
 		attr_reader :nick
 
-		# Public: The username of this user or nil if the source is a server.
+		# Public: The username of this user or nil if the prefix is a server.
 		attr_reader :user
 
-		# Public: Initialise a new message source from a serialised source.
+		# Public: Initialise a new message prefix from a serialised prefix.
 		#
-		# source - Either a n!u@h mask or a server name.
-		def initialize source
-			if MATCH_SERVER =~ source
+		# prefix - Either a n!u@h mask or a server name.
+		def initialize prefix
+			if MATCH_SERVER =~ prefix
 				@type = :server
 				@host = $~[:host]
-			elsif MATCH_USER =~ source
+			elsif MATCH_USER =~ prefix
 				@type = :user
 				@nick = $~[:nick]
 				@user = $~[:user]
 				@host = $~[:host]
 			else
-				raise IRCParser::Error.new(source), 'source is not a user mask or server name'
+				raise IRCParser::Error.new(prefix), 'prefix is not a user mask or server name'
 			end
 		end
 
-		# Public: Whether this source represents a user.
+		# Public: Whether this prefix represents a user.
 		def is_user?
 			return @type == :user
 		end
 
-		# Public: Whether this source represents a server.
+		# Public: Whether this prefix represents a server.
 		def is_server?
 			return @type == :server
 		end
 
-		# Public: The name by which this source can be identified.
+		# Public: The name by which this prefix can be identified.
 		def name
 			return is_user? ? @nick : @host
 		end
 
-		# Public: serialises this source to the serialised form.
+		# Public: serialises this prefix to the serialised form.
 		def to_s
 			if is_user?
 				buffer = @nick
