@@ -30,7 +30,7 @@ describe IRCParser::Message do
 
 			@message.tags.must_equal tags
 			@message.prefix.wont_be_nil
-			@message.prefix.host.must_equal 'irc.example.com'
+			@message.prefix.nick.must_equal 'irc.example.com'
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_equal parameters
 		end
@@ -49,7 +49,7 @@ describe IRCParser::Message do
 
 			@message.tags.must_be_empty
 			@message.prefix.wont_be_nil
-			@message.prefix.host.must_equal 'irc.example.com'
+			@message.prefix.nick.must_equal 'irc.example.com'
 			@message.command.must_equal 'COMMAND'
 			@message.parameters.must_equal parameters
 		end
