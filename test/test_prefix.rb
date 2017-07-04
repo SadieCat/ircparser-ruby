@@ -20,11 +20,31 @@ require 'minitest/autorun'
 
 describe IRCParser::Prefix do
 	PREFIXES = {
-		'nick!user@host'  => { nick: 'nick',            user: 'user', host: 'host' },
-		'nick!user'       => { nick: 'nick',            user: 'user', host: nil    },
-		'nick@host'       => { nick: 'nick',            user: nil,    host: 'host' },
-		'nick'            => { nick: 'nick',            user: nil,    host: nil    },
-		'irc.example.com' => { nick: 'irc.example.com', user: nil,    host: nil    },
+		'nick!user@host' => {
+			nick: 'nick',
+			user: 'user',
+			host: 'host'
+		},
+		'nick!user' => {
+			nick: 'nick',
+			user: 'user',
+			host: nil
+		},
+		'nick@host' => {
+			nick: 'nick',
+			user: nil,
+			host: 'host'
+		},
+		'nick' => {
+			nick: 'nick',
+			user: nil,
+			host: nil
+		},
+		'irc.example.com' => {
+			nick: 'irc.example.com',
+			user: nil,
+			host: nil
+		},
 	}
 
 	PREFIXES.each do |serialized, deserialized|
