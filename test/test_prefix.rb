@@ -50,31 +50,40 @@ describe IRCParser::Prefix do
 	PREFIXES.each do |serialized, deserialized|
 		describe 'when checking a valid prefix' do
 			before do
-				@prefix = IRCParser::Prefix.new serialized
+				@text = ":#{serialized} COMMAND"
+				@message = IRCParser::Message.parse @text
 			end
 			it 'should consist of the correct components' do
 				%i(nick user host).each do |component|
 					if deserialized[component].nil?
-						@prefix.send(component).must_be_nil
+						@message.prefix.send(component).must_be_nil
 					else
-						@prefix.send(component).must_equal deserialized[component]
+						@message.prefix.send(component).must_equal deserialized[component]
 					end
 				end
 			end
 			it 'should serialise back to the same text' do
-				@prefix.to_s.must_equal serialized
+				@message.to_s.must_equal @text
 			end
 		end
 	end
 
-	describe 'when checking an invalid user prefix' do
-		it 'should throw an IRCParser::Error when components are missing' do
-			proc { IRCParser::Prefix.new 'nick!@' }.must_raise IRCParser::Error
-			proc { IRCParser::Prefix.new '!user@' }.must_raise IRCParser::Error
-			proc { IRCParser::Prefix.new '!@host' }.must_raise IRCParser::Error
-			proc { IRCParser::Prefix.new 'nick!user@' }.must_raise IRCParser::Error
-			proc { IRCParser::Prefix.new 'nick!@host' }.must_raise IRCParser::Error
-			proc { IRCParser::Prefix.new '!user@host' }.must_raise IRCParser::Error
+	MALFORMED = [
+		'nick!@',
+		'!user@',
+		'!@host',
+		'nick!user@',
+		'nick!@host',
+		'!user@host',
+	]
+
+	MALFORMED.each do |prefix|
+		describe 'when checking an invalid user prefix' do
+			it 'should throw an IRCParser::Error when components are missing' do
+				proc {
+					IRCParser::Message.parse ":#{prefix} COMMAND"
+				}.must_raise IRCParser::Error
+			end
 		end
 	end
 end

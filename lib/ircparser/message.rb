@@ -18,31 +18,24 @@ module IRCParser
 	# Public: Represents an IRC message.
 	class Message
 
-		# Internal: A regular expression which matches a tag.
-		MATCH_TAG = /^(?<name>[^\s=]+?)(?:=(?<value>[^\s;]+))?$/
-
-		# Internal: The characters which need to be escaped in tag values.
-		TAG_ESCAPES = {
-			'\\'  => '\\\\',
-			';'   => '\:',
-			"\s"  => '\s',
-			"\r"  => '\r',
-			"\n"  => '\n'
-		}
-
 		# Public: Command name (e.g. PRIVMSG).
 		attr_reader :command
 
 		# Public: An array of command parameters.
 		attr_reader :parameters
 
-		# Public: The prefix of this command or nil if unprefixd.
+		# Public: The prefix of this command or nil if unprefixed.
 		attr_reader :prefix
 
 		# Public: A hash of IRCv3 message tags.
 		attr_reader :tags
 
-		# Public: Initialize a new message.
+		# Public: Initializes a new message.
+		#
+		# command - Command name (e.g. PRIVMSG).
+		# parameters - An array of command parameters.
+		# prefix - The prefix of this command or nil if unprefixed.
+		# tags - A hash of IRCv3 message tags.
 		def initialize command: String.new, parameters: Array.new, prefix: nil, tags: Hash.new
 			@command    = command
 			@parameters = parameters
@@ -50,163 +43,16 @@ module IRCParser
 			@tags       = tags
 		end
 
-		# Public: Parses an IRC message from network form.
+		# Public: Parses an IRC message from wire form.
 		#
 		# line - The line to attempt to parse.
 		def self.parse line
-
-			# Ruby really needs some kind of basic type checking.
-			raise IRCParser::Error.new(line), "line is not a string" unless line.is_a? String
-
-			# Split the message up into an array of tokens.
-			buffer = line.clone
-			current_token = __get_token buffer
-			components = Hash.new
-
-			# Have we encountered IRCv3 message tags?
-			components[:tags] = Hash.new
-			if current_token != nil && current_token[0] == '@'
-				components[:tags] = __parse_tags current_token
-				current_token = __get_token buffer
-			end
-
-			# Have we encountered the prefix of this message?
-			if current_token != nil && current_token[0] == ':'
-				components[:prefix] = IRCParser::Prefix.new current_token[1..-1]
-				current_token = __get_token buffer
-			end
-
-			# The command parameter is mandatory.
-			if current_token != nil
-				components[:command] = current_token.upcase
-				current_token = __get_final_token buffer
-			else
-				raise IRCParser::Error.new(line), 'message is missing the command name'
-			end
-
-			# Try to parse all of the remaining parameters.
-			components[:parameters] = Array.new
-			while current_token != nil
-				components[:parameters] << current_token
-				current_token = __get_final_token buffer
-			end
-
-			return IRCParser::Message.new components
+			return IRCParser::RFCWireFormat.objectify line.clone
 		end
-
 
 		# Public: Serializes the message to a string.
 		def to_s
-			buffer = String.new
-
-			# Serialize the tags.
-			unless tags.empty?
-				buffer += '@'
-				buffer += __serialize_tags
-				buffer += ' '
-			end
-
-			# Serialize the prefix.
-			unless prefix.nil?
-				buffer += ':'
-				buffer += prefix.to_s
-				buffer += ' '
-			end
-
-			# Serialize the command.
-			buffer += command
-
-			# Serialize the parameters
-			buffer += __serialize_parameters
-
-			# We're done!
-			return buffer
-		end
-
-		private
-
-		# Internal: Retrieves a space delimited token from the buffer.
-		#
-		# data - The buffer to retrieve the token from.
-		def self.__get_token buffer
-			return nil if buffer.empty?
-			position = buffer.index ' '
-			if position == nil
-				token = buffer.clone
-				buffer.clear
-				return token
-			end
-			token = buffer.slice! 0...position
-			position = buffer.index /\S+/
-			if position == nil
-				buffer.clear
-			else
-				buffer.slice! 0...position
-			end
-			return token
-		end
-
-		# Internal: Retrieves a space delimited token that may be a <trailing> parameter.
-		#
-		# data - The buffer to retrieve the token from.
-		def self.__get_final_token buffer
-			return nil if buffer.empty?
-			if buffer[0] == ':'
-				token = buffer[1..-1]
-				buffer.clear
-				return token
-			end
-			return __get_token buffer
-		end
-
-		# Internal: Parse tags from network form to a Hash.
-		#
-		# token - A list of tags in network form.
-		def self.__parse_tags token
-			tags = Hash.new
-			token[1..-1].split(';').each do |tag|
-				if tag =~ MATCH_TAG
-					name, value = $~['name'], $~['value']
-					TAG_ESCAPES.each do |unescaped, escaped|
-						value.gsub! escaped, unescaped
-					end unless value.nil?
-					tags[name] = value
-				else
-					raise IRCParser::Error.new(tag), "tag is malformed"
-				end
-			end
-			return tags
-		end
-
-		# Internal: Serializes parameters from an Array to network form.
-		def __serialize_parameters
-			buffer = String.new
-			@parameters.each_with_index do |parameter, index|
-				trailing = parameter.include? ' '
-				if trailing && index != @parameters.size-1
-					raise IRCParser::Error.new(parameter), "only the last parameter may contain spaces"
-				end
-
-				buffer += ' '
-				if trailing || parameter.empty?
-					buffer += ':'
-					buffer += parameter
-					break
-				end
-				buffer += parameter
-			end
-			return buffer
-		end
-
-		# Internal: Serializes tags from a Hash to network form.
-		def __serialize_tags
-			buffer = @tags.dup.map do |key, value|
-				TAG_ESCAPES.each do |unescaped, escaped|
-					value.gsub! unescaped, Regexp.escape(escaped)
-				end unless value.nil?
-				value.nil? ? key : key + '=' + value
-			end.join ';'
-			return buffer
+			return IRCParser::RFCWireFormat.stringify self.clone
 		end
 	end
 end

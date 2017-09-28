@@ -21,7 +21,7 @@ module IRCParser
 		# Public: The value which failed to parse correctly.
 		attr_reader :value
 
-		# Public: Initialise a new parse error with the specified invalid value.
+		# Public: Initialises a new parse error with the specified invalid value.
 		#
 		# value - The value which failed to parse correctly.
 		def initialize value

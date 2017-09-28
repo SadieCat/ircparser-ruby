@@ -18,9 +18,6 @@ module IRCParser
 	# Public: Represents the prefix of an IRC message.
 	class Prefix
 
-		# Internal: A regular expression which matches a n!u@h mask.
-		MATCH_PREFIX = /^(?<nick>[^@!]+)  (?:!(?<user>[^@]+))?  (?:@(?<host>.+))?$/x
-
 		# Public: The hostname of this prefix or nil if no hostname was given.
 		attr_reader :host
 
@@ -30,25 +27,15 @@ module IRCParser
 		# Public: The username of this prefix or nil if no username was given.
 		attr_reader :user
 
-		# Public: Initialise a new message prefix from a serialised prefix.
+		# Public: Initialises a new message prefix.
 		#
-		# prefix - Either a n!u@h mask or a server name.
-		def initialize prefix
-			if MATCH_PREFIX =~ prefix
-				@nick = $~[:nick]
-				@user = $~[:user]
-				@host = $~[:host]
-			else
-				raise IRCParser::Error.new(prefix), 'prefix is not a user mask or server name'
-			end
-		end
-
-		# Public: serialises this prefix to the network form.
-		def to_s
-			buffer = @nick
-			buffer += "!#{@user}" unless @user.nil?
-			buffer += "@#{@host}" unless @host.nil?
-			return buffer
+		# nick - The nickname of this user.
+		# user - The username of this prefix or nil if no username was given.
+		# host - The hostname of this prefix or nil if no hostname was given.
+		def initialize nick: nil, user: nil, host: nil
+			@nick = nick
+			@user = user
+			@host = host
 		end
 	end
 end
