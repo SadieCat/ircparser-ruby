@@ -15,12 +15,32 @@
 
 module IRCParser
 
-	# Public: The version of IRCParser in use.
-	VERSION = '0.5.0'
-end
+	# Public: Parses IRC messages from a stream of data.
+	class Stream
 
-require_relative 'ircparser/error'
-require_relative 'ircparser/message'
-require_relative 'ircparser/prefix'
-require_relative 'ircparser/stream'
-require_relative 'ircparser/wire/rfc'
+		# Public: The contents of the stream buffer.
+		attr_reader :buffer
+
+		# Public: The block which is called when a message is parsed.
+		attr_reader :block
+
+		# Public: Initialize a new stream.
+		def initialize &block
+			unless block.is_a? Proc
+				raise TypeError, "Wrong argument type #{block.class} (expected Proc)"
+			end
+			@block = block
+		end
+
+		# Public: Appends data to the stream buffer.
+		#
+		# data - The data to append.
+		def append data
+			(@buffer ||= '') << data
+			while @buffer.slice! /(.*?)\r?\n/
+				message = IRCParser::Message.parse $1
+				@block.call message
+			end
+		end
+	end
+end

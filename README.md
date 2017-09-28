@@ -19,6 +19,22 @@ rescue IRCParser::Error => e
 end
 ```
 
+Alternatively, you can use the `IRCParser::Stream` class to directly parse data received from a network socket like this:
+
+```ruby
+require 'ircparser'
+begin
+	stream = IRCParser::Stream.new do |message|
+		puts message.inspect
+	end
+	stream.append "@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 :ir"
+	stream.append "c.example.com COMMAND param1 param2 :param3 param3\n\r"
+	# => #<IRCParser::Message:0x00007f9e63131808 @command="COMMAND", @parameters=["param1", "param2", "param3 param3"], @prefix=#<IRCParser::Prefix:0x00007f9e63131f10 @nick="irc.example.com", @user=nil, @host=nil>, @tags={"tag1"=>"value1", "tag2"=>nil, "vendor1/tag3"=>"value2", "vendor2/tag4"=>nil}>
+rescue IRCParser::Error => e
+	puts "ERROR: #{e.message} -- #{e.value}"
+end
+```
+
 ### Creating Messages
 
 ```ruby
