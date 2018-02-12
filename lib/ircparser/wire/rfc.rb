@@ -108,11 +108,11 @@ module IRCParser
 
 		# Internal: The characters which need to be escaped in tag values.
 		TAG_ESCAPES = {
-			'\\'  => '\\\\',
-			';'   => '\:',
-			"\s"  => '\s',
-			"\r"  => '\r',
-			"\n"  => '\n'
+			'\\\\' => '\\',
+			'\:'   => ';',
+			'\s'   => "\s",
+			'\r'   => "\r",
+			'\n'   => "\n",
 		}
 
 		# Internal: Retrieves a space delimited token from the buffer.
@@ -166,11 +166,22 @@ module IRCParser
 			tags = Hash.new
 			token[1..-1].split(';').each do |tag|
 				if tag =~ MATCH_TAG
-					name, value = $~['name'], $~['value']
-					TAG_ESCAPES.each do |unescaped, escaped|
-						value.gsub! escaped, unescaped
-					end unless value.nil?
-					tags[name] = value
+					value = nil
+					value_index = 0
+					while $~['value'] != nil && value_index < $~['value'].size
+						value ||= String.new
+						if $~['value'][value_index] == '\\'
+							escape = $~['value'].slice(value_index, 2)
+							if TAG_ESCAPES.include? escape
+								value += TAG_ESCAPES[escape]
+								value_index += 1
+							end
+						else
+							value += $~['value'][value_index]
+						end
+						value_index += 1
+					end
+					tags[$~['name']] = value
 				else
 					raise IRCParser::Error.new(tag), 'tag is malformed'
 				end
@@ -214,12 +225,22 @@ module IRCParser
 		#
 		# tags - A Hash of tags to stringify to the RFC wire format.
 		def self.__stringify_tags tags
-			buffer = tags.map do |key, value|
-				TAG_ESCAPES.each do |unescaped, escaped|
-					value.gsub! unescaped, Regexp.escape(escaped)
-				end unless value.nil?
-				value.nil? ? key : key + '=' + value
-			end.join ';'
+			buffer = String.new
+			tags.each.with_index do |tag, idx|
+				key, value = tag
+				buffer += key
+				unless value.nil?
+					buffer += '='
+					value.each_char do |chr|
+						if TAG_ESCAPES.has_value? chr
+							buffer += TAG_ESCAPES.key chr
+						else
+							buffer += chr
+						end
+					end
+				end
+				buffer += ';' if idx < tags.size - 1
+			end
 			return buffer
 		end
 

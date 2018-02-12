@@ -168,6 +168,31 @@ describe IRCParser::Message do
 		end
 	end
 
+	describe 'when checking we can handle parsing malformed tags' do
+		before do
+			@text = '@foo=wibble\Zwobble\\ COMMAND'
+			@message = IRCParser::Message.parse @text
+		end
+		it 'should strip invalid and trailing escapes' do
+			@message.tags['foo'].must_equal 'wibbleZwobble'
+		end
+		it 'should serialise back to a well formed value' do
+			@message.to_s.must_equal '@foo=wibbleZwobble COMMAND'
+		end
+	end
+
+	describe 'when checking we can handle serialising without creating malformed tags' do
+		before do
+			@tags = {
+				'foo' => 'wibble\Zwobble\\'
+			}
+			@message = IRCParser::Message.new tags: @tags, command: 'COMMAND'
+		end
+		it 'should serialise without creating malformed tags' do
+			@message.to_s.must_equal '@foo=wibble\\\\Zwobble\\\\ COMMAND'
+		end
+	end
+
 	describe 'when checking we can handle serialising malformed parameters' do
 		it 'should throw an IRCParser::Error when a non <trailing> parameter contains spaces' do
 			proc {
