@@ -144,12 +144,24 @@ describe IRCParser::Message do
 		end
 	end
 
+	describe 'when checking we can handle a space before the command' do
+		before do
+			@text = ' COMMAND'
+			@message = IRCParser::Message.parse @text
+		end
+		it 'should parse the message properly' do
+			@message.command.must_equal 'COMMAND'
+			@message.parameters.size.must_equal 0
+		end
+	end
+
 	describe 'when checking we can handle a space after the command' do
 		before do
 			@text = 'COMMAND '
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should parse the message properly' do
+			@message.command.must_equal 'COMMAND'
 			@message.parameters.size.must_equal 0
 		end
 	end
@@ -160,6 +172,7 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should parse the trailing parameter properly' do
+			@message.command.must_equal 'COMMAND'
 			@message.parameters.size.must_equal 1
 			@message.parameters[0].must_equal ''
 		end
@@ -202,4 +215,31 @@ describe IRCParser::Message do
 		end
 	end
 
+	describe 'when checking we handle parsing malformed messages properly' do
+		it 'should throw an IRCParser::Error when trying to parse an empty message' do
+			proc {
+				IRCParser::Message.parse ''
+			}.must_raise IRCParser::Error
+		end
+		it 'should throw an IRCParser::Error when trying to parse an whitespace message' do
+			proc {
+				IRCParser::Message.parse '     '
+			}.must_raise IRCParser::Error
+		end
+		it 'should throw an IRCParser::Error when trying to parse a message with tags and a prefix but no command' do
+			proc {
+				IRCParser::Message.parse '@foo;bar=baz :irc.example.com'
+			}.must_raise IRCParser::Error
+		end
+		it 'should throw an IRCParser::Error when trying to parse a message with tags but no command' do
+			proc {
+				IRCParser::Message.parse '@foo;bar=baz'
+			}.must_raise IRCParser::Error
+		end
+		it 'should throw an IRCParser::Error when trying to parse a message with a prefix but no command' do
+			proc {
+				IRCParser::Message.parse ':irc.example.com'
+			}.must_raise IRCParser::Error
+		end
+	end
 end

@@ -28,6 +28,10 @@ module IRCParser
 				raise IRCParser::Error.new(line), "message is not a string"
 			end
 
+			# Skip any preceding whitespace. This is technically invalid but
+			# is implemented by several servers in the wild.
+			str.lstrip!
+
 			# Split the message up into an array of tokens.
 			current_token = self.__get_token str
 			components = Hash.new
