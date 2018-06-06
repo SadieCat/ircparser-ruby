@@ -25,43 +25,43 @@ module IRCParser
 
 			# Ruby really needs some kind of basic type checking.
 			unless str.is_a? String
-				raise IRCParser::Error.new(line), "message is not a string"
+				raise IRCParser::Error.new(str), "message is not a String"
 			end
 
 			# Skip any preceding whitespace. This is technically invalid but
 			# is implemented by several servers in the wild.
-			str.lstrip!
+			message = str.lstrip
 
 			# Split the message up into an array of tokens.
-			current_token = self.__get_token str
+			current_token = self.__get_token message
 			components = Hash.new
 
 			# Have we encountered IRCv3 message tags?
 			components[:tags] = Hash.new
 			if current_token != nil && current_token[0] == '@'
 				components[:tags] = self.__objectify_tags current_token
-				current_token = self.__get_token str
+				current_token = self.__get_token message
 			end
 
 			# Have we encountered the prefix of this message?
 			if current_token != nil && current_token[0] == ':'
 				components[:prefix] = self.__objectify_prefix current_token
-				current_token = self.__get_token str
+				current_token = self.__get_token message
 			end
 
 			# The command parameter is mandatory.
 			if current_token != nil
 				components[:command] = current_token.upcase
-				current_token = self.__get_final_token str
+				current_token = self.__get_final_token message
 			else
-				raise IRCParser::Error.new(line), 'message is missing the command name'
+				raise IRCParser::Error.new(str), 'message is missing the command name'
 			end
 
 			# Try to parse all of the remaining parameters.
 			components[:parameters] = Array.new
 			while current_token != nil
 				components[:parameters] << current_token
-				current_token = self.__get_final_token str
+				current_token = self.__get_final_token message
 			end
 
 			return IRCParser::Message.new components

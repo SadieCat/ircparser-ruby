@@ -47,12 +47,12 @@ module IRCParser
 		#
 		# line - The line to attempt to parse.
 		def self.parse line
-			return IRCParser::RFCWireFormat.objectify line.clone
+			return IRCParser::RFCWireFormat.objectify line
 		end
 
 		# Public: Serializes the message to a string.
 		def to_s
-			return IRCParser::RFCWireFormat.stringify self.clone
+			return IRCParser::RFCWireFormat.stringify self
 		end
 	end
 end
