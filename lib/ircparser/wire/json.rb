@@ -13,14 +13,16 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
+require 'json'
+
 module IRCParser
 
-	# Internal: Implements objectification and stringification for the RFC wire format.
-	module RFCWireFormat
+	# Internal: Implements objectification and stringification for the JSON wire format.
+	module JSONWireFormat
 
-		# Internal: Objectifies a message from the RFC wire format to an IRCParser::Message.
+		# Internal: Objectifies a message from the JSON wire format to an IRCParser::Message.
 		#
-		# str - A String containing a message in the RFC wire format.
+		# str - A String containing a message in the JSON wire format.
 		def self.objectify str
 
 			# Ruby really needs some kind of basic type checking.
@@ -28,16 +30,27 @@ module IRCParser
 				raise IRCParser::Error.new(str), "message is not a String"
 			end
 
-			# Skip any preceding whitespace. This is technically invalid but
-			# is implemented by several servers in the wild.
-			message = str.lstrip
+			# Parse and validate the JSON object.
+			message = JSON.parse str.lstrip, max_nesting: 6 rescue nil
+			unless message.is_a? Hash
+				raise IRCParser::Error.new(str), 'message is not a JSON object'
+			end
 
-			# Split the message up into an array of tokens.
-			current_token = self.__get_token message
-			components = Hash.new
+			 { tags: Hash.new, parameters: Array.new }
 
 			# Have we encountered IRCv3 message tags?
-			components[:tags] = Hash.new
+			components = Hash.new
+			components[:tags] = if message.include? 'tags'
+				raise IRCParser::Error.new(str), 'message tags are not a JSON object' unless message[:tags].is_a? Hash
+				message[:tags]
+			else
+				Hash.new
+			end
+
+			components[:prefix] = if message.include? 'source'
+				
+			end
+
 			if current_token != nil && current_token[0] == '@'
 				components[:tags] = self.__objectify_tags current_token
 				current_token = self.__get_token message
@@ -67,9 +80,9 @@ module IRCParser
 			return IRCParser::Message.new components
 		end
 
-		# Internal: Stringifies a message from an IRCParser::Message to the RFC wire format.
+		# Internal: Stringifies a message from an IRCParser::Message to the JSON wire format.
 		#
-		# obj - An IRCParser::Message to stringify to the RFC wire format.
+		# obj - An IRCParser::Message to stringify to the JSON wire format.
 		def self.stringify obj
 
 			# Ruby really needs some kind of basic type checking.
@@ -153,9 +166,9 @@ module IRCParser
 			return self.__get_token buffer
 		end
 
-		# Internal: Objectifies the prefix from the RFC wire format to an IRCParser::Prefix.
+		# Internal: Objectifies the prefix from the JSON wire format to an IRCParser::Prefix.
 		#
-		# token - A String containing the prefix in the RFC wire format.
+		# token - A String containing the prefix in the JSON wire format.
 		def self.__objectify_prefix prefix
 			unless MATCH_PREFIX =~ prefix
 				raise IRCParser::Error.new(prefix), 'prefix is not a user mask or server name'
@@ -163,9 +176,9 @@ module IRCParser
 			return IRCParser::Prefix.new nick: $~[:nick], user: $~[:user], host: $~[:host]
 		end
 
-		# Internal: Objectifies tags from the RFC wire format to a Hash.
+		# Internal: Objectifies tags from the JSON wire format to a Hash.
 		#
-		# token - A String containing tags in the RFC wire format.
+		# token - A String containing tags in the JSON wire format.
 		def self.__objectify_tags token
 			tags = Hash.new
 			token[1..-1].split(';').each do |tag|
@@ -193,9 +206,9 @@ module IRCParser
 			return tags
 		end
 
-		# Internal: Stringifies parameters from an Array to the RFC wire format.
+		# Internal: Stringifies parameters from an Array to the JSON wire format.
 		#
-		# parameters - An Array to stringify to the RFC wire format.
+		# parameters - An Array to stringify to the JSON wire format.
 		def self.__stringify_parameters parameters
 			buffer = String.new
 			parameters.each_with_index do |parameter, index|
@@ -215,9 +228,9 @@ module IRCParser
 			return buffer
 		end
 
-		# Internal: Stringifies the prefix from an IRCParser::Prefix to the RFC wire format.
+		# Internal: Stringifies the prefix from an IRCParser::Prefix to the JSON wire format.
 		#
-		# tags - An IRCParser::Prefix to stringify to the RFC wire format.
+		# tags - An IRCParser::Prefix to stringify to the JSON wire format.
 		def self.__stringify_prefix prefix
 			buffer = prefix.nick
 			buffer += "!#{prefix.user}" unless prefix.user.nil?
@@ -225,9 +238,9 @@ module IRCParser
 			return buffer
 		end
 
-		# Internal: Stringifies tags from a Hash to the RFC wire format.
+		# Internal: Stringifies tags from a Hash to the JSON wire format.
 		#
-		# tags - A Hash of tags to stringify to the RFC wire format.
+		# tags - A Hash of tags to stringify to the JSON wire format.
 		def self.__stringify_tags tags
 			buffer = String.new
 			tags.each.with_index do |tag, idx|
