@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
 
 	s.author   = 'Peter "SaberUK" Powell'
 	s.email    = 'petpow@saberuk.com'
-	s.homepage = 'https://github.com/SaberUK/ircparser'
+	s.homepage = 'https://github.com/SaberUK/ircparser-ruby'
 
 	s.add_development_dependency 'minitest', '~> 5.10', '>= 5.10.1'
 	s.add_development_dependency 'rake', '~> 12.0'
