@@ -1,6 +1,6 @@
 # IRCParser - Internet Relay Chat Message Parser
 #
-#   Copyright (C) 2015-2018 Peter "SaberUK" Powell <petpow@saberuk.com>
+#   Copyright (C) 2015-2019 Peter "SaberUK" Powell <petpow@saberuk.com>
 #
 # Permission to use, copy, modify, and/or distribute this software for any purpose with or without
 # fee is hereby granted, provided that the above copyright notice and this permission notice appear
@@ -16,7 +16,7 @@
 module IRCParser
 
 	# Public: The version of IRCParser in use.
-	VERSION = '0.6.0'
+	VERSION = '0.6.1'
 end
 
 require_relative 'ircparser/error'
