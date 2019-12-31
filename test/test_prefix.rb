@@ -56,14 +56,14 @@ describe IRCParser::Prefix do
 			it 'should consist of the correct components' do
 				%i(nick user host).each do |component|
 					if deserialized[component].nil?
-						@message.prefix.send(component).must_be_nil
+						_(@message.prefix.send(component)).must_be_nil
 					else
-						@message.prefix.send(component).must_equal deserialized[component]
+						_(@message.prefix.send(component)).must_equal deserialized[component]
 					end
 				end
 			end
 			it 'should serialise back to the same text' do
-				@message.to_s.must_equal @text
+				_(@message.to_s).must_equal @text
 			end
 		end
 	end
@@ -80,9 +80,9 @@ describe IRCParser::Prefix do
 	MALFORMED.each do |prefix|
 		describe 'when checking an invalid user prefix' do
 			it 'should throw an IRCParser::Error when components are missing' do
-				proc {
+				_(proc {
 					IRCParser::Message.parse ":#{prefix} COMMAND"
-				}.must_raise IRCParser::Error
+				}).must_raise IRCParser::Error
 			end
 		end
 	end

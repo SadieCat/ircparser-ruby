@@ -28,14 +28,14 @@ describe IRCParser::Message do
 			tags = { 'tag1' => 'value1', 'tag2' => nil, 'vendor1/tag3' => 'value2', 'vendor2/tag4' => nil }
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
-			@message.tags.must_equal tags
-			@message.prefix.wont_be_nil
-			@message.prefix.nick.must_equal 'irc.example.com'
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.must_equal parameters
+			_(@message.tags).must_equal tags
+			_(@message.prefix).wont_be_nil
+			_(@message.prefix.nick).must_equal 'irc.example.com'
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters).must_equal parameters
 		end
 		it 'should serialise back to the same text' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -47,14 +47,14 @@ describe IRCParser::Message do
 		it 'should consist of the correct components' do
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
-			@message.tags.must_be_empty
-			@message.prefix.wont_be_nil
-			@message.prefix.nick.must_equal 'irc.example.com'
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.must_equal parameters
+			_(@message.tags).must_be_empty
+			_(@message.prefix).wont_be_nil
+			_(@message.prefix.nick).must_equal 'irc.example.com'
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters).must_equal parameters
 		end
 		it 'should serialise back to the same text' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -67,13 +67,13 @@ describe IRCParser::Message do
 			tags = { 'tag1' => 'value1', 'tag2' => nil, 'vendor1/tag3' => 'value2', 'vendor2/tag4' => nil }
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
-			@message.tags.must_equal tags
-			@message.prefix.must_be_nil
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.must_equal parameters
+			_(@message.tags).must_equal tags
+			_(@message.prefix).must_be_nil
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters).must_equal parameters
 		end
 		it 'should serialise back to the same text' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -86,13 +86,13 @@ describe IRCParser::Message do
 			tags = { 'tag1' => 'value1', 'tag2' => nil, 'vendor1/tag3' => 'value2', 'vendor2/tag4' => nil }
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
-			@message.tags.must_equal tags
-			@message.prefix.must_be_nil
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.must_equal parameters
+			_(@message.tags).must_equal tags
+			_(@message.prefix).must_be_nil
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters).must_equal parameters
 		end
 		it 'should serialise back to the same text' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -103,13 +103,13 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should consist of the correct components' do 
-			@message.tags.must_be_empty
-			@message.prefix.must_be_nil
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.must_be_empty
+			_(@message.tags).must_be_empty
+			_(@message.prefix).must_be_nil
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters).must_be_empty
 		end
 		it 'should serialise back to the same text' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -122,11 +122,11 @@ describe IRCParser::Message do
 		it 'should escape correctly' do
 			tags = { 'foo' => @unescaped }
 			message = IRCParser::Message.new command: 'COMMAND', tags: tags
-			message.to_s.must_equal @text
+			_(message.to_s).must_equal @text
 		end
 		it 'should unescape correctly' do
 			message = IRCParser::Message.parse @text
-			message.tags['foo'].must_equal @unescaped
+			_(message.tags['foo']).must_equal @unescaped
 		end
 	end
 
@@ -136,11 +136,11 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should parse the trailing parameter properly' do
-			@message.parameters.size.must_equal 1
-			@message.parameters[0].must_equal 'param1  param1  '
+			_(@message.parameters.size).must_equal 1
+			_(@message.parameters[0]).must_equal 'param1  param1  '
 		end
 		it 'should serialize the trailing parameter properly' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -150,8 +150,8 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should parse the message properly' do
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.size.must_equal 0
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters.size).must_equal 0
 		end
 	end
 
@@ -161,8 +161,8 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should parse the message properly' do
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.size.must_equal 0
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters.size).must_equal 0
 		end
 	end
 
@@ -172,12 +172,12 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should parse the trailing parameter properly' do
-			@message.command.must_equal 'COMMAND'
-			@message.parameters.size.must_equal 1
-			@message.parameters[0].must_equal ''
+			_(@message.command).must_equal 'COMMAND'
+			_(@message.parameters.size).must_equal 1
+			_(@message.parameters[0]).must_equal ''
 		end
 		it 'should serialize the trailing parameter properly' do
-			@message.to_s.must_equal @text
+			_(@message.to_s).must_equal @text
 		end
 	end
 
@@ -187,10 +187,10 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should strip invalid and trailing escapes' do
-			@message.tags['foo'].must_equal 'wibbleZwobble'
+			_(@message.tags['foo']).must_equal 'wibbleZwobble'
 		end
 		it 'should serialise back to a well formed value' do
-			@message.to_s.must_equal '@foo=wibbleZwobble COMMAND'
+			_(@message.to_s).must_equal '@foo=wibbleZwobble COMMAND'
 		end
 	end
 
@@ -202,44 +202,44 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.new tags: @tags, command: 'COMMAND'
 		end
 		it 'should serialise without creating malformed tags' do
-			@message.to_s.must_equal '@foo=wibble\\\\Zwobble\\\\ COMMAND'
+			_(@message.to_s).must_equal '@foo=wibble\\\\Zwobble\\\\ COMMAND'
 		end
 	end
 
 	describe 'when checking we can handle serialising malformed parameters' do
 		it 'should throw an IRCParser::Error when a non <trailing> parameter contains spaces' do
-			proc {
+			_(proc {
 				message = IRCParser::Message.new command: 'COMMAND', parameters: [ 'param1 param1', 'param2' ]
 				message.to_s
-			}.must_raise IRCParser::Error
+			}).must_raise IRCParser::Error
 		end
 	end
 
 	describe 'when checking we handle parsing malformed messages properly' do
 		it 'should throw an IRCParser::Error when trying to parse an empty message' do
-			proc {
+			_(proc {
 				IRCParser::Message.parse ''
-			}.must_raise IRCParser::Error
+			}).must_raise IRCParser::Error
 		end
 		it 'should throw an IRCParser::Error when trying to parse an whitespace message' do
-			proc {
+			_(proc {
 				IRCParser::Message.parse '     '
-			}.must_raise IRCParser::Error
+			}).must_raise IRCParser::Error
 		end
 		it 'should throw an IRCParser::Error when trying to parse a message with tags and a prefix but no command' do
-			proc {
+			_(proc {
 				IRCParser::Message.parse '@foo;bar=baz :irc.example.com'
-			}.must_raise IRCParser::Error
+			}).must_raise IRCParser::Error
 		end
 		it 'should throw an IRCParser::Error when trying to parse a message with tags but no command' do
-			proc {
+			_(proc {
 				IRCParser::Message.parse '@foo;bar=baz'
-			}.must_raise IRCParser::Error
+			}).must_raise IRCParser::Error
 		end
 		it 'should throw an IRCParser::Error when trying to parse a message with a prefix but no command' do
-			proc {
+			_(proc {
 				IRCParser::Message.parse ':irc.example.com'
-			}.must_raise IRCParser::Error
+			}).must_raise IRCParser::Error
 		end
 	end
 end
