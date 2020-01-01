@@ -1,6 +1,6 @@
 # IRCParser - Internet Relay Chat Message Parser
 #
-#   Copyright (C) 2015-2019 Peter "SaberUK" Powell <petpow@saberuk.com>
+#   Copyright (C) 2015-2020 Sadie Powell <sadie@witchery.services>
 #
 # Permission to use, copy, modify, and/or distribute this software for any purpose with or without
 # fee is hereby granted, provided that the above copyright notice and this permission notice appear

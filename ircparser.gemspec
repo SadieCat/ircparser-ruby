@@ -1,6 +1,6 @@
 # IRCParser - Internet Relay Chat Message Parser
 #
-#   Copyright (C) 2015-2019 Peter "SaberUK" Powell <petpow@saberuk.com>
+#   Copyright (C) 2015-2020 Sadie Powell <sadie@witchery.services>
 #
 # Permission to use, copy, modify, and/or distribute this software for any purpose with or without
 # fee is hereby granted, provided that the above copyright notice and this permission notice appear
@@ -25,9 +25,9 @@ Gem::Specification.new do |s|
 	s.required_ruby_version = '>= 2.0.0'
 	s.license               = 'ISC'
 
-	s.author   = 'Peter "SaberUK" Powell'
-	s.email    = 'petpow@saberuk.com'
-	s.homepage = 'https://github.com/SaberUK/ircparser-ruby'
+	s.author   = 'Sadie Powell'
+	s.email    = 'sadie@witchery.services'
+	s.homepage = 'https://github.com/SadieCat/ircparser-ruby'
 
 	s.add_development_dependency 'minitest', '~> 5.13'
 	s.add_development_dependency 'rake', '~> 13.0.1'
