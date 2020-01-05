@@ -168,10 +168,9 @@ module IRCParser
 			tags = Hash.new
 			token[1..-1].split(';').each do |tag|
 				if tag =~ MATCH_TAG
-					value = nil
+					value = String.new
 					value_index = 0
 					while $~['value'] != nil && value_index < $~['value'].size
-						value ||= String.new
 						if $~['value'][value_index] == '\\'
 							escape = $~['value'].slice(value_index, 2)
 							if TAG_ESCAPES.include? escape
@@ -231,7 +230,7 @@ module IRCParser
 			tags.each.with_index do |tag, idx|
 				key, value = tag
 				buffer += key
-				unless value.nil?
+				unless value.nil? || value.empty?
 					buffer += '='
 					value.each_char do |chr|
 						if TAG_ESCAPES.has_value? chr

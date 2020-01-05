@@ -13,7 +13,7 @@ require 'ircparser'
 begin
 	message = IRCParser::Message.parse '@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 :irc.example.com COMMAND param1 param2 :param3 param3'
 	puts message.inspect
-	# => #<IRCParser::Message:0x00007f951f06da18 @command="COMMAND", @parameters=["param1", "param2", "param3 param3"], @prefix=#<IRCParser::Prefix:0x00007f951f06f200 @nick="irc.example.com", @user=nil, @host=nil>, @tags={"tag1"=>"value1", "tag2"=>nil, "vendor1/tag3"=>"value2", "vendor2/tag4"=>nil}>
+	# => <IRCParser::Message:0x00007fe0f11f1ad8 @command="COMMAND", @parameters=["param1", "param2", "param3 param3"], @prefix=#<IRCParser::Prefix:0x00007fe0f2120068 @nick="irc.example.com", @user=nil, @host=nil>, @tags={"tag1"=>"value1", "tag2"=>"", "vendor1/tag3"=>"value2", "vendor2/tag4"=>""}>
 rescue IRCParser::Error => e
 	puts "ERROR: #{e.message} -- #{e.value}"
 end
@@ -29,7 +29,7 @@ begin
 	end
 	stream.append "@tag1=value1;tag2;vendor1/tag3=value2;vendor2/tag4 :ir"
 	stream.append "c.example.com COMMAND param1 param2 :param3 param3\n\r"
-	# => #<IRCParser::Message:0x00007f9e63131808 @command="COMMAND", @parameters=["param1", "param2", "param3 param3"], @prefix=#<IRCParser::Prefix:0x00007f9e63131f10 @nick="irc.example.com", @user=nil, @host=nil>, @tags={"tag1"=>"value1", "tag2"=>nil, "vendor1/tag3"=>"value2", "vendor2/tag4"=>nil}>
+	# => <IRCParser::Message:0x00007fe0f18b9988 @command="COMMAND", @parameters=["param1", "param2", "param3 param3"], @prefix=#<IRCParser::Prefix:0x00007fe0f18b9dc0 @nick="irc.example.com", @user=nil, @host=nil>, @tags={"tag1"=>"value1", "tag2"=>"", "vendor1/tag3"=>"value2", "vendor2/tag4"=>""}>
 rescue IRCParser::Error => e
 	puts "ERROR: #{e.message} -- #{e.value}"
 end

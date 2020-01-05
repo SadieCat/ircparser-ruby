@@ -25,7 +25,7 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should consist of the correct components' do
-			tags = { 'tag1' => 'value1', 'tag2' => nil, 'vendor1/tag3' => 'value2', 'vendor2/tag4' => nil }
+			tags = { 'tag1' => 'value1', 'tag2' => '', 'vendor1/tag3' => 'value2', 'vendor2/tag4' => '' }
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			_(@message.tags).must_equal tags
@@ -64,7 +64,7 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should consist of the correct components' do
-			tags = { 'tag1' => 'value1', 'tag2' => nil, 'vendor1/tag3' => 'value2', 'vendor2/tag4' => nil }
+			tags = { 'tag1' => 'value1', 'tag2' => '', 'vendor1/tag3' => 'value2', 'vendor2/tag4' => '' }
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			_(@message.tags).must_equal tags
@@ -83,7 +83,7 @@ describe IRCParser::Message do
 			@message = IRCParser::Message.parse @text
 		end
 		it 'should consist of the correct components' do
-			tags = { 'tag1' => 'value1', 'tag2' => nil, 'vendor1/tag3' => 'value2', 'vendor2/tag4' => nil }
+			tags = { 'tag1' => 'value1', 'tag2' => '', 'vendor1/tag3' => 'value2', 'vendor2/tag4' => '' }
 			parameters = [ 'param1', 'param2', 'param3 param3' ]
 
 			_(@message.tags).must_equal tags
