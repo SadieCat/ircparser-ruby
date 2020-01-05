@@ -38,8 +38,12 @@ module IRCParser
 		def append data
 			(@buffer ||= '') << data
 			while @buffer.slice! /(.*?)\r?\n/
-				message = IRCParser::Message.parse $1
-				@block.call message
+				begin
+					message = IRCParser::Message.parse $1
+					@block.call message, nil
+				rescue IRCParser::Error => error
+					@block.call nil, error
+				end
 			end
 		end
 	end
