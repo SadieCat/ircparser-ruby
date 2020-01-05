@@ -18,6 +18,41 @@ module IRCParser
 	# Internal: Implements objectification and stringification for the RFC wire format.
 	module RFCWireFormat
 
+		class MessageTokenizer
+
+			def initialize message
+				@message = message
+				# Skip any preceding whitespace. This is technically invalid but
+				# is implemented by several servers in the wild.
+				@position = message.index(/\S/) || 0
+			end
+
+			# Internal: Retrieves a space delimited token from the message.
+			def read_middle
+				return nil if @position >= @message.length
+				old_position = @position
+				@position = @message.index(' ', old_position) || @message.length
+				return nil unless @position - old_position > 0
+				token = @message.slice old_position...@position
+				@position = @message.index(/\S+/, @position) || @message.length
+				return token
+			end
+
+			# Internal: Retrieves a space delimited token that may be a <trailing> parameter.
+			#
+			# message - The message to retrieve the token from.
+			def read_trailing
+				return nil if @position >= @message.length
+				if @message[@position] == ':'
+					token = @message[@position+1..-1]
+					@position = @message.length
+					return token
+				end
+				return read_middle
+			end
+
+		end
+
 		# Internal: Objectifies a message from the RFC wire format to an IRCParser::Message.
 		#
 		# str - A String containing a message in the RFC wire format.
@@ -28,31 +63,28 @@ module IRCParser
 				raise IRCParser::Error.new(str), "message is not a String"
 			end
 
-			# Skip any preceding whitespace. This is technically invalid but
-			# is implemented by several servers in the wild.
-			message = str.lstrip
-
 			# Split the message up into an array of tokens.
-			current_token = self.__get_token message
+			tokenizer = MessageTokenizer.new str
+			current_token = tokenizer.read_middle
 			components = Hash.new
 
 			# Have we encountered IRCv3 message tags?
 			components[:tags] = Hash.new
 			if current_token != nil && current_token[0] == '@'
 				components[:tags] = self.__objectify_tags current_token
-				current_token = self.__get_token message
+				current_token = tokenizer.read_middle
 			end
 
 			# Have we encountered the prefix of this message?
 			if current_token != nil && current_token[0] == ':'
 				components[:prefix] = self.__objectify_prefix current_token
-				current_token = self.__get_token message
+				current_token = tokenizer.read_middle
 			end
 
 			# The command parameter is mandatory.
 			if current_token != nil
 				components[:command] = current_token.upcase
-				current_token = self.__get_final_token message
+				current_token = tokenizer.read_trailing
 			else
 				raise IRCParser::Error.new(str), 'message is missing the command name'
 			end
@@ -61,7 +93,7 @@ module IRCParser
 			components[:parameters] = Array.new
 			while current_token != nil
 				components[:parameters] << current_token
-				current_token = self.__get_final_token message
+				current_token = tokenizer.read_trailing
 			end
 
 			return IRCParser::Message.new components
@@ -118,40 +150,6 @@ module IRCParser
 			'\r'   => "\r",
 			'\n'   => "\n",
 		}
-
-		# Internal: Retrieves a space delimited token from the buffer.
-		#
-		# buffer - The buffer to retrieve the token from.
-		def self.__get_token buffer
-			return nil if buffer.empty?
-			position = buffer.index ' '
-			if position == nil
-				token = buffer.clone
-				buffer.clear
-				return token
-			end
-			token = buffer.slice! 0...position
-			position = buffer.index /\S+/
-			if position == nil
-				buffer.clear
-			else
-				buffer.slice! 0...position
-			end
-			return token
-		end
-
-		# Internal: Retrieves a space delimited token that may be a <trailing> parameter.
-		#
-		# buffer - The buffer to retrieve the token from.
-		def self.__get_final_token buffer
-			return nil if buffer.empty?
-			if buffer[0] == ':'
-				token = buffer[1..-1]
-				buffer.clear
-				return token
-			end
-			return self.__get_token buffer
-		end
 
 		# Internal: Objectifies the prefix from the RFC wire format to an IRCParser::Prefix.
 		#
