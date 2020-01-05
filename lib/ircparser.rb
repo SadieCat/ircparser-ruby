@@ -16,7 +16,7 @@
 module IRCParser
 
 	# Public: The version of IRCParser in use.
-	VERSION = '0.6.2'
+	VERSION = '0.7.0'
 end
 
 require_relative 'ircparser/error'
