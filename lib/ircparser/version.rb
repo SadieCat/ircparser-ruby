@@ -13,23 +13,24 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
-require_relative 'lib/ircparser'
+module IRCParser
 
-Gem::Specification.new do |s|
-	s.name        = 'ircparser'
-	s.description = 'A standards compliant parser for the IRCv3 message format.'
-	s.summary     = 'An IRCv3 message parser.'
-	s.version     = IRCParser::VERSION
+	# Public: The version number which is incremented when compatibility is broken.
+	VERSION_MAJOR = 0
 
-	s.files                 = Dir['lib/**/*.rb'] + Dir['test/**/*.rb']
-	s.required_ruby_version = '>= 2.5.0'
-	s.license               = 'ISC'
+	# Public: The version number which is incremented when new features are added.
+	VERSION_MINOR = 7
 
-	s.author   = 'Sadie Powell'
-	s.email    = 'sadie@witchery.services'
-	s.homepage = 'https://github.com/SadieCat/ircparser-ruby'
+	# Public: The version number which is incremented when bugs are fixed.
+	VERSION_PATCH = 0
 
-	s.add_development_dependency 'minitest', '~> 5.13'
-	s.add_development_dependency 'rake', '~> 13.0.1'
-	s.add_development_dependency 'tomdoc',   '~> 0.2.5'
+	# Public: The version label which describes the status of the build.
+	VERSION_LABEL = nil
+
+	# Public: A string which contains the current version.
+	VERSION = if VERSION_LABEL.nil?
+		"#{VERSION_MAJOR}.#{VERSION_MINOR}.#{VERSION_PATCH}".freeze
+	else
+		"#{VERSION_MAJOR}.#{VERSION_MINOR}.#{VERSION_PATCH}-#{VERSION_LABEL}".freeze
+	end
 end

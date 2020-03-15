@@ -50,7 +50,7 @@ module IRCParser
 			return IRCParser::RFCWireFormat.objectify line
 		end
 
-		# Public: Serializes the message to a string.
+		# Public: Serializes the message to a string.
 		def to_s
 			return IRCParser::RFCWireFormat.stringify self
 		end

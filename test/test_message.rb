@@ -96,13 +96,12 @@ describe IRCParser::Message do
 		end
 	end
 
-
 	describe 'when checking a valid message with no tags, prefix or parameters' do
 		before do
 			@text = 'COMMAND'
 			@message = IRCParser::Message.parse @text
 		end
-		it 'should consist of the correct components' do 
+		it 'should consist of the correct components' do
 			_(@message.tags).must_be_empty
 			_(@message.prefix).must_be_nil
 			_(@message.command).must_equal 'COMMAND'

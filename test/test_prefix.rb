@@ -45,7 +45,7 @@ describe IRCParser::Prefix do
 			user: nil,
 			host: nil
 		},
-	}
+	}.freeze
 
 	PREFIXES.each do |serialized, deserialized|
 		describe 'when checking a valid prefix' do
@@ -75,7 +75,7 @@ describe IRCParser::Prefix do
 		'nick!user@',
 		'nick!@host',
 		'!user@host',
-	]
+	].freeze
 
 	MALFORMED.each do |prefix|
 		describe 'when checking an invalid user prefix' do

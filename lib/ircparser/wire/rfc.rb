@@ -18,6 +18,7 @@ module IRCParser
 	# Internal: Implements objectification and stringification for the RFC wire format.
 	module RFCWireFormat
 
+		# Internal: Tokenizer for the RFC wire format.
 		class MessageTokenizer
 
 			def initialize message
@@ -32,7 +33,7 @@ module IRCParser
 				return nil if @position >= @message.length
 				old_position = @position
 				@position = @message.index(' ', old_position) || @message.length
-				return nil unless @position - old_position > 0
+				return nil unless (@position - old_position).positive?
 				token = @message.slice old_position...@position
 				@position = @message.index(/\S+/, @position) || @message.length
 				return token
@@ -60,7 +61,7 @@ module IRCParser
 
 			# Ruby really needs some kind of basic type checking.
 			unless str.is_a? String
-				raise IRCParser::Error.new(str), "message is not a String"
+				raise IRCParser::Error.new(str), 'message is not a String'
 			end
 
 			# Split the message up into an array of tokens.
@@ -70,19 +71,19 @@ module IRCParser
 
 			# Have we encountered IRCv3 message tags?
 			components[:tags] = Hash.new
-			if current_token != nil && current_token[0] == '@'
+			if !current_token.nil? && current_token[0] == '@'
 				components[:tags] = self.__objectify_tags current_token
 				current_token = tokenizer.read_middle
 			end
 
 			# Have we encountered the prefix of this message?
-			if current_token != nil && current_token[0] == ':'
+			if !current_token.nil? && current_token[0] == ':'
 				components[:prefix] = self.__objectify_prefix current_token
 				current_token = tokenizer.read_middle
 			end
 
 			# The command parameter is mandatory.
-			if current_token != nil
+			unless current_token.nil?
 				components[:command] = current_token.upcase
 				current_token = tokenizer.read_trailing
 			else
@@ -91,12 +92,12 @@ module IRCParser
 
 			# Try to parse all of the remaining parameters.
 			components[:parameters] = Array.new
-			while current_token != nil
+			while !current_token.nil?
 				components[:parameters] << current_token
 				current_token = tokenizer.read_trailing
 			end
 
-			return IRCParser::Message.new components
+			return IRCParser::Message.new **components
 		end
 
 		# Internal: Stringifies a message from an IRCParser::Message to the RFC wire format.
@@ -106,7 +107,7 @@ module IRCParser
 
 			# Ruby really needs some kind of basic type checking.
 			unless obj.is_a? IRCParser::Message
-				raise IRCParser::Error.new(obj), "message is not an IRCParser::Message"
+				raise IRCParser::Error.new(obj), 'message is not an IRCParser::Message'
 			end
 
 			# Stringify the tags.
@@ -134,13 +135,11 @@ module IRCParser
 			return buffer
 		end
 
-		private
-
 		# Internal: A regular expression which matches a n!u@h mask.
-		MATCH_PREFIX = /^:(?<nick>[^@!]+)  (?:!(?<user>[^@]+))?  (?:@(?<host>.+))?$/x
+		MATCH_PREFIX = /^:(?<nick>[^@!]+)  (?:!(?<user>[^@]+))?  (?:@(?<host>.+))?$/x.freeze
 
 		# Internal: A regular expression which matches a tag.
-		MATCH_TAG = /^(?<name>[^\s=]+?)(?:=(?<value>[^\s;]+))?$/
+		MATCH_TAG = /^(?<name>[^\s=]+?)(?:=(?<value>[^\s;]+))?$/.freeze
 
 		# Internal: The characters which need to be escaped in tag values.
 		TAG_ESCAPES = {
@@ -149,7 +148,7 @@ module IRCParser
 			'\s'   => "\s",
 			'\r'   => "\r",
 			'\n'   => "\n",
-		}
+		}.freeze
 
 		# Internal: Objectifies the prefix from the RFC wire format to an IRCParser::Prefix.
 		#
@@ -170,7 +169,7 @@ module IRCParser
 				if tag =~ MATCH_TAG
 					value = String.new
 					value_index = 0
-					while $~['value'] != nil && value_index < $~['value'].size
+					while !$~['value'].nil? && value_index < $~['value'].size
 						if $~['value'][value_index] == '\\'
 							escape = $~['value'].slice(value_index, 2)
 							if TAG_ESCAPES.include? escape
@@ -233,10 +232,10 @@ module IRCParser
 				unless value.nil? || value.empty?
 					buffer += '='
 					value.each_char do |chr|
-						if TAG_ESCAPES.has_value? chr
-							buffer += TAG_ESCAPES.key chr
+						buffer += if TAG_ESCAPES.value? chr
+							TAG_ESCAPES.key chr
 						else
-							buffer += chr
+							chr
 						end
 					end
 				end

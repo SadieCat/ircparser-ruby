@@ -13,14 +13,9 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
-module IRCParser
-
-	# Public: The version of IRCParser in use.
-	VERSION = '0.7.0'
-end
-
 require_relative 'ircparser/error'
 require_relative 'ircparser/message'
 require_relative 'ircparser/prefix'
 require_relative 'ircparser/stream'
 require_relative 'ircparser/wire/rfc'
+require_relative 'ircparser/version'
