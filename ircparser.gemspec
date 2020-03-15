@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
 	s.version     = IRCParser::VERSION
 
 	s.files                 = Dir["lib/**/*.rb"] + Dir['test/**/*.rb']
-	s.required_ruby_version = '>= 2.0.0'
+	s.required_ruby_version = '>= 2.5.0'
 	s.license               = 'ISC'
 
 	s.author   = 'Sadie Powell'
